@@ -1,0 +1,82 @@
+<div class="header">
+  <h3 class="text-muted">Natura CO</h3>
+</div>
+
+<button ng-click="destroy()" class="btn btn-danger btn-block">Deletar Dados</button>
+<button ng-click="getData()" class="btn btn-info btn-block">Ver Dados</button>
+
+<div class="row marketing">
+  <h2 class="sub-header">Atletas</h2>
+  <form class="form-inline" role="form">
+    <div class="form-group">
+      <label for="atleta" class="sr-only">Atleta</label>
+      <input type="text" class="form-control" id="atleta"
+             ng-model="data.atleta" placeholder="Nº Atleta">
+    </div>
+    <button class="btn btn-primary" ng-click="addAtleta()"
+            ng-class="{disabled: ! (data.atleta) }">
+      <span class="glyphicon glyphicon-plus"></span> Adicionar Atleta
+    </button>
+  </form>
+</div>
+
+<div class="row marketing">
+  <h2 class="sub-header">Partidas</h2>
+  <form class="form-inline" role="form">
+    <div class="form-group">
+      <label for="atletaSaida" class="sr-only">Atleta</label>
+      <input type="text" class="form-control" id="atletaSaida"
+             ng-model="data.atletaSaida" placeholder="Nº Atleta">
+    </div>
+    <div class="form-group">
+      <label for="horarioSaida" class="sr-only">Horário</label>
+      <input type="text" class="form-control" id="horarioSaida"
+             ng-model="data.horarioSaida" placeholder="Horário de Saída">
+    </div>
+    <button class="btn btn-primary" ng-click="addSaida()"
+            ng-class="{disabled: ! (data.atletaSaida && data.horarioSaida) }">
+      <span class="glyphicon glyphicon-plus"></span> Registrar Saída
+    </button>
+  </form>
+</div>
+
+<div class="row marketing">
+  <h2 class="sub-header">Chegadas</h2>
+  <form class="form-inline" role="form">
+    <div class="form-group">
+      <label for="atletaChegada" class="sr-only">Atleta</label>
+      <input type="text" class="form-control" id="atletaChegada"
+             ng-model="data.atletaChegada" placeholder="Nº Atleta">
+    </div>
+    <button class="btn btn-primary" ng-click="addChegada()"
+            ng-class="{disabled: ! data.atletaChegada }">
+      <span class="glyphicon glyphicon-plus"></span> Registrar Chegada
+    </button>
+  </form>
+</div>
+
+<div class="row marketing" ng-show="data.records">
+  <h2 class="sub-header">Dados</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Atleta</th>
+        <th>Partida</th>
+        <th>Chegada</th> 
+        <th>Tempo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="record in data.records">
+        <td>{{ record.id }}</td>
+        <td>{{ record.doc.saida }}</td>
+        <td>{{ record.doc.chegada }}</td>
+        <td>{{ record.doc.tempo }} minutos</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="footer">
+  <p>Desenvolvido com <span class="glyphicon glyphicon-heart"></span> por Andreo Vieira</p>
+</div>
