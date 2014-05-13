@@ -11,13 +11,16 @@ angular.module('javascriptApp')
       add: function(obj) {
         return pouchdbWrapper.put(obj);
       },
+      remove: function(id) {
+        return pouchdbWrapper.remove(id);
+      },
       get: function(id) {
         return pouchdbWrapper.get(id);
       },
       all: function() {
         return pouchdbWrapper.allDocs({
           include_docs: true,
-          descending: true
+          descending: false
         });
       },
       destroy: function() {

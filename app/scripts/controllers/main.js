@@ -5,6 +5,7 @@ angular.module('javascriptApp')
 
     $scope.data = {};
 
+    /* Adiciona um novo atleta */
     $scope.addAtleta = function() {
         pdbService.add({
             _id : $scope.data.atleta
@@ -14,7 +15,8 @@ angular.module('javascriptApp')
         });
     };
 
-    $scope.addSaida =  function() {
+    /* Adiciona uma partida */
+    $scope.addSaida = function() {
 
         pdbService.get($scope.data.atletaSaida).then(function(response) {
 
@@ -41,6 +43,7 @@ angular.module('javascriptApp')
         });
     };
 
+    /* Adiciona uma chegada */
     $scope.addChegada = function() {
 
         pdbService.get($scope.data.atletaChegada).then(function(response) {
@@ -77,9 +80,22 @@ angular.module('javascriptApp')
     };
 
     $scope.getData = function() {
+
         pdbService.all().then(function(response) {
             $scope.data.records = response.rows;
         });
+
+    };
+
+    /* Remove um registro */
+    $scope.removeRecord = function(record) {
+
+        pdbService.get(record).then(function(response) {
+            pdbService.remove(response).then(function(response) {
+                $scope.getData();
+            });
+        });
+
     };
 
     $scope.getData();
