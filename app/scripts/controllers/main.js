@@ -22,8 +22,10 @@ angular.module('javascriptApp')
 
             var tempoPercurso = '';
             if (response.chegada) {
-                tempoPercurso = moment(response.chegada, 'HH:mm')
-                    .diff(moment($scope.data.horarioSaida, 'HH:mm'), 'minutes', true)
+                /*tempoPercurso = moment(response.chegada, 'HH:mm')
+                    .diff(moment($scope.data.horarioSaida, 'HH:mm'), 'minutes', true)*/
+                tempoPercurso = moment(response.chegada, 'HH:mm:ss')
+                    .subtract(moment($scope.data.horarioSaida, 'HH:mm')).format('HH:mm:ss');
             }
 
             // Existing record
@@ -49,10 +51,10 @@ angular.module('javascriptApp')
         pdbService.get($scope.data.atletaChegada).then(function(response) {
 
             var tempo = '';
-            var hAtual = moment().format('HH:mm');
+            var hAtual = moment().format('HH:mm:ss');
             
             if (response.saida) {
-                tempo = moment(hAtual, 'HH:mm').diff(moment(response.saida, 'HH:mm'), 'minutes', true)
+                tempo = moment(hAtual, 'HH:mm:ss').subtract(moment(response.saida, 'HH:mm')).format('HH:mm:ss');
             }
             
             // Existing record
@@ -61,7 +63,7 @@ angular.module('javascriptApp')
                 _rev    : response._rev,
                 tempo   : tempo,
                 saida   : response.saida,
-                chegada : moment().format('HH:mm')
+                chegada : hAtual
             })
             .then(function() {
                 $scope.getData();
@@ -76,7 +78,7 @@ angular.module('javascriptApp')
         pdbService.destroy().then(function() {
             $scope.getData();
             $scope.data.records = null;
-        });
+        }).catch(function(err) { console.log(err); });
     };
 
     $scope.getData = function() {

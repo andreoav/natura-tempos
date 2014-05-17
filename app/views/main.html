@@ -86,7 +86,7 @@
           <td>{{ record.id }}</td>
           <td>{{ record.doc.saida }}</td>
           <td>{{ record.doc.chegada }}</td>
-          <td>{{ record.doc.tempo }} minutos</td>
+          <td>{{ record.doc.tempo }}</td>
           <td>
             <button class="btn btn-default btn-danger btn-xs pull-right"
                     ng-click="removeRecord(record.id)">
@@ -96,5 +96,11 @@
         </tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<div class="row" ng-show="data.records">
+  <div class="col-sm-12">
+    <button type="button" class="btn btn-danger btn-block" ng-click="destroy()">Apagar Dados</button>
   </div>
 </div>
