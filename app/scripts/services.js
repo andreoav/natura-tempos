@@ -1,30 +1,29 @@
 'use strict';
 
+/**
+* javascriptApp Module
+*
+* Description
+*/
 angular.module('javascriptApp')
-  .factory('pouchdbWrapper', ['pouchdb', function(pouchdb) {
-    return pouchdb.create('natura-tempos');
-  }]);
+  .factory('TimesManager', ['$localForage', function($localForage) {
 
-angular.module('javascriptApp')
-  .factory('pouchdbService', ['pouchdbWrapper', function(pouchdbWrapper) {
+    var dbKey = 'atletas';
+
     return {
-      add: function(obj) {
-        return pouchdbWrapper.put(obj);
-      },
-      remove: function(id) {
-        return pouchdbWrapper.remove(id);
-      },
-      get: function(id) {
-        return pouchdbWrapper.get(id);
-      },
+
       all: function() {
-        return pouchdbWrapper.allDocs({
-          include_docs: true,
-          descending: false
-        });
+        return $localForage.getItem(dbKey);
       },
+
+      sync: function(_atletas) {
+        return $localForage.setItem(dbKey, _atletas);
+      },
+
       destroy: function() {
-        return pouchdbWrapper.destroy();
+        return $localForage.removeItem(dbKey);
       }
+
     };
+
   }]);

@@ -1,111 +1,96 @@
 'use strict';
 
 angular.module('javascriptApp')
-  .controller('MainCtrl', ['$scope', 'pouchdbService', function ($scope, pdbService) {
+  .controller('MainCtrl', ['$scope', 'ngTableParams', 'TimesManager', 'CATEGORIAS',
+    function ($scope, ngTableParams, TimesManager, CATEGORIAS) {
 
-    $scope.data = {};
+      $scope.atletaChegada = '';
+      $scope.atletaSaida   = { numero: '', horario: '' };
+      $scope.novoAtleta    = { numero    : '', categoria : CATEGORIAS[0], saida: '', chegada: '' };
+      $scope.atletas       = { cadastrados : [] };
+      $scope.categorias    = CATEGORIAS;
 
-    /* Adiciona um novo atleta */
-    $scope.addAtleta = function() {
-        pdbService.add({
-            _id : $scope.data.atleta
-        }).then(function() {
-            $scope.getData();
-            $scope.data.atleta = '';
-        });
-    };
+      /* Adiciona um novo atleta */
+      $scope.addAtleta = function() {
 
-    /* Adiciona uma partida */
-    $scope.addSaida = function() {
-
-        pdbService.get($scope.data.atletaSaida).then(function(response) {
-
-            var tempoPercurso = '';
-            if (response.chegada) {
-                /*tempoPercurso = moment(response.chegada, 'HH:mm')
-                    .diff(moment($scope.data.horarioSaida, 'HH:mm'), 'minutes', true)*/
-                tempoPercurso = moment(response.chegada, 'HH:mm:ss')
-                    .subtract(moment($scope.data.horarioSaida, 'HH:mm')).format('HH:mm:ss');
-            }
-
-            // Existing record
-            pdbService.add({
-                _id     : response._id,
-                _rev    : response._rev,
-                tempo   : tempoPercurso,
-                chegada : response.chegada,
-                saida   : $scope.data.horarioSaida
-            })
-            .then(function() {
-                $scope.getData();
-                $scope.data.atletaSaida = '';
-                $scope.data.horarioSaida = '';
-            });
-
-        });
-    };
-
-    /* Adiciona uma chegada */
-    $scope.addChegada = function() {
-
-        pdbService.get($scope.data.atletaChegada).then(function(response) {
-
-            var tempo = '';
-            var hAtual = moment().format('HH:mm:ss');
-            
-            if (response.saida) {
-                tempo = moment(hAtual, 'HH:mm:ss').subtract(moment(response.saida, 'HH:mm')).format('HH:mm:ss');
-            }
-            
-            // Existing record
-            pdbService.add({
-                _id     : response._id,
-                _rev    : response._rev,
-                tempo   : tempo,
-                saida   : response.saida,
-                chegada : hAtual
-            })
-            .then(function() {
-                $scope.getData();
-                $scope.data.atletaChegada = '';
-                $scope.data.horarioChegada = '';
-            });
-
-        });
-    };
-
-    $scope.destroy = function() {
-        pdbService.destroy().then(function() {
-            $scope.getData();
-            $scope.data.records = null;
-        }).catch(function(err) { console.log(err); });
-    };
-
-    $scope.getData = function() {
-
-        pdbService.all().then(function(response) {
-            $scope.data.records = response.rows;
+        var existente = _.find($scope.atletas.cadastrados, {
+          numero: $scope.novoAtleta.numero
         });
 
-    };
+        // Verifica se já está cadastrado
+        if (angular.isDefined(existente))
+        {
+          existente.categoria = $scope.novoAtleta.categoria;
+        }
+        else
+        {
+          $scope.atletas.cadastrados.push({
+            numero: $scope.novoAtleta.numero,
+            categoria: $scope.novoAtleta.categoria
+          });
+        }
 
-    /* Remove um registro */
-    $scope.removeRecord = function(record) {
+        // Salva no localStorage
+        TimesManager.sync($scope.atletas.cadastrados).then(function() {
 
-        pdbService.get(record).then(function(response) {
-            pdbService.remove(response).then(function(response) {
-                $scope.getData();
-            });
+          $scope.novoAtleta.numero    = '';
+          $scope.novoAtleta.categoria = CATEGORIAS[0];
+
         });
 
-    };
+        // Recarrega a tabela
+        $scope.tableParams.reload();
+      };
 
-    $scope.getData();
+      /* Adiciona uma partida */
+      $scope.addSaida = function() { };
 
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
+      /* Adiciona uma chegada */
+      $scope.addChegada = function() {
 
-  }]);
+          /*var tempo = '';
+          var hAtual = moment().format('HH:mm:ss');
+
+          if (response.saida) {
+              tempo = moment(hAtual, 'HH:mm:ss').subtract(
+                moment(response.saida, 'HH:mm')
+              ).format('HH:mm:ss');
+          }*/
+
+      };
+
+      // Remove o atleta selecionado
+      $scope.removeRecord = function(_atleta) {
+        var _index = _.findIndex($scope.atletas.cadastrados, _atleta);
+        $scope.atletas.cadastrados.splice(_index, 1);
+        TimesManager.sync($scope.atletas.cadastrados);
+        $scope.tableParams.reload();
+      };
+
+      // Delete o banco de dados do sistema
+      $scope.destroy = function() {
+        TimesManager.destroy().then(function() {
+          $scope.atletas.cadastrados = [];
+          $scope.tableParams.reload();
+        });
+      };
+
+      TimesManager.all().then(function(_atletasCadastrados) {
+        $scope.atletas.cadastrados = _atletasCadastrados ? _atletasCadastrados : [];
+        $scope.tableParams.reload();
+      });
+
+      $scope.tableParams = new ngTableParams({
+        page: 1,
+        count: 10
+      }, {
+        total: 0,
+        groupBy: 'categoria',
+        getData: function($defer, params) {
+          params.total($scope.atletas.cadastrados.length);
+          $defer.resolve($scope.atletas.cadastrados);
+        }
+      });
+
+    }]
+  );

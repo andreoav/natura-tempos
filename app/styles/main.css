@@ -12,3 +12,21 @@ body {
 .theme-showcase > p > .btn {
   margin: 5px 0;
 }
+
+.main-view.ng-enter {
+  -webkit-animation: fadeIn 1s;
+  -o-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+}
+
+.atletas-table.ng-hide-remove {
+  -webkit-animation: fadeInDown .2s;
+  -o-animation: fadeInDown .2s;
+  animation: fadeInDown .2s;
+}
+
+.atletas-table.ng-hide-add {
+  -webkit-animation: fadeOutDown .2s;
+  -o-animation: fadeOutDown .2s;
+  animation: fadeOutDown .2s;
+}
