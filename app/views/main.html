@@ -13,9 +13,10 @@
           </div>
           <div class="form-group">
             <label for="atleta-categoria" class="sr-only">Categoria</label>
-            <select required id="atleta-categoria" class="form-control"
-              ng-model="novoAtleta.categoria"
-              ng-options="categoria for categoria in categorias track by categoria"></select>
+              <select ng-model="novoAtleta.categoria" ui-select2="selectOptions" data-placeholder="Selecione a categoria">
+                <option value=""></option>
+                <option value="{{ categoria }}" ng-repeat="categoria in categorias">{{ categoria }}</option>
+              </select>
           </div>
           <button type="submit" class="btn btn-primary btn-block" ng-disabled="novoAtletaForm.$invalid">
             <span class="glyphicon glyphicon-plus"></span> Atleta
