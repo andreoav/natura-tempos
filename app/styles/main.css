@@ -20,13 +20,14 @@ body {
 }
 
 .atletas-table.ng-hide-remove {
-  -webkit-animation: fadeInDown .2s;
-  -o-animation: fadeInDown .2s;
-  animation: fadeInDown .2s;
+  opacity: 0;
+  -webkit-animation: fadeInDown .5s;
+  -o-animation: fadeInDown .5;
+  animation: fadeInDown .5s;
 }
 
 .atletas-table.ng-hide-add {
-  -webkit-animation: fadeOutDown .2s;
-  -o-animation: fadeOutDown .2s;
-  animation: fadeOutDown .2s;
+  -webkit-animation: fadeOutDown .5s;
+  -o-animation: fadeOutDown .5s;
+  animation: fadeOutDown .5s;
 }

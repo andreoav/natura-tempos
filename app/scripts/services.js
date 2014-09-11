@@ -1,11 +1,11 @@
 'use strict';
 
 /**
-* javascriptApp Module
+* natura.tempos Module
 *
 * Description
 */
-angular.module('javascriptApp')
+angular.module('natura.tempos')
   .factory('TimesManager', ['$localForage', function($localForage) {
 
     var dbKey = 'atletas';

@@ -1,14 +1,17 @@
 'use strict';
 
 angular
-  .module('javascriptApp', [
+  .module('natura.tempos', [
     'ngCookies',
     'ngResource',
     'ngSanitize',
     'ngAnimate',
     'ngRoute',
     'ngTable',
+    'ui.utils',
     'ngTableExport',
+    'ngNumeraljs',
+    'angularMoment',
     'LocalForageModule'
   ])
   .config(['$routeProvider', '$localForageProvider', function ($routeProvider, $localForageProvider) {
@@ -27,7 +30,7 @@ angular
 
   }]);
 
-angular.module('javascriptApp')
+angular.module('natura.tempos')
   .constant('CATEGORIAS', [
     'H10N',
     'D10N',

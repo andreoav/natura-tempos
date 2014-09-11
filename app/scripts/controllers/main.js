@@ -1,12 +1,12 @@
 'use strict';
 
-angular.module('javascriptApp')
-  .controller('MainCtrl', ['$scope', 'ngTableParams', 'TimesManager', 'CATEGORIAS',
-    function ($scope, ngTableParams, TimesManager, CATEGORIAS) {
+angular.module('natura.tempos')
+  .controller('MainCtrl', ['$scope', '$timeout', 'ngTableParams', 'TimesManager', 'CATEGORIAS',
+    function ($scope, $timeout, ngTableParams, TimesManager, CATEGORIAS) {
 
-      $scope.atletaChegada = '';
+      $scope.atletaChegada = { numero: '' };
       $scope.atletaSaida   = { numero: '', horario: '' };
-      $scope.novoAtleta    = { numero    : '', categoria : CATEGORIAS[0], saida: '', chegada: '' };
+      $scope.novoAtleta    = { numero    : '', categoria : CATEGORIAS[0], saida: '', chegada: '', tempo: '' };
       $scope.atletas       = { cadastrados : [] };
       $scope.categorias    = CATEGORIAS;
 
@@ -25,17 +25,18 @@ angular.module('javascriptApp')
         else
         {
           $scope.atletas.cadastrados.push({
-            numero: $scope.novoAtleta.numero,
-            categoria: $scope.novoAtleta.categoria
+            numero    : $scope.novoAtleta.numero,
+            categoria : $scope.novoAtleta.categoria,
+            saida     : '',
+            chegada   : '',
+            tempo     : ''
           });
         }
 
         // Salva no localStorage
         TimesManager.sync($scope.atletas.cadastrados).then(function() {
-
           $scope.novoAtleta.numero    = '';
           $scope.novoAtleta.categoria = CATEGORIAS[0];
-
         });
 
         // Recarrega a tabela
@@ -43,19 +44,62 @@ angular.module('javascriptApp')
       };
 
       /* Adiciona uma partida */
-      $scope.addSaida = function() { };
+      $scope.addSaida = function() {
+
+        if (isInvalidTime($scope.atletaSaida.horario))
+        {
+          return showWarningMessage('A horário informado é inválido.');
+        }
+
+        // Procura se o atleta está cadastrado
+        var _index = indexByNumber($scope.atletaSaida.numero);
+
+        if (_index === -1)
+        {
+          return showWarningMessage('O atleta ' + $scope.atletaSaida.numero + ' não está cadastrado no sistema.');
+        }
+
+        // Seta o horário no model
+        $scope.atletas.cadastrados[_index].saida = moment($scope.atletaSaida.horario + '00', 'HHmmss').format('HH:mm:ss');
+
+        TimesManager.sync($scope.atletas.cadastrados).then(function() {
+          $scope.atletaSaida.numero  = '';
+          $scope.atletaSaida.horario = '';
+        });
+
+      };
 
       /* Adiciona uma chegada */
       $scope.addChegada = function() {
 
-          /*var tempo = '';
-          var hAtual = moment().format('HH:mm:ss');
+        // Procura se o atleta está cadastrado
+        var _index = indexByNumber($scope.atletaChegada.numero);
 
-          if (response.saida) {
-              tempo = moment(hAtual, 'HH:mm:ss').subtract(
-                moment(response.saida, 'HH:mm')
-              ).format('HH:mm:ss');
-          }*/
+        if (_index === -1)
+        {
+          return showWarningMessage('O atleta ' + $scope.atletaSaida.numero + ' não está cadastrado no sistema.');
+        }
+
+        // Adiciona a chegada
+        var _atleta = $scope.atletas.cadastrados[_index];
+        var _now    = moment();
+
+        if (_now.isBefore(moment(_atleta.saida, 'HH:mm:ss')))
+        {
+          return showWarningMessage('O horário de chegada é anterior ao horário de saída.');
+        }
+
+        if (_atleta.saida == '')
+        {
+          return showWarningMessage('O atleta não possui um horário de saída cadastrado.');
+        }
+
+        _atleta.chegada = _now.format('HH:mm:ss');
+        _atleta.tempo   = _now.subtract(moment(_atleta.saida, 'HH:mm:ss')).format('HH:mm:ss');
+
+        TimesManager.sync($scope.atletas.cadastrados).then(function() {
+          $scope.atletaChegada.numero = '';
+        });
 
       };
 
@@ -73,6 +117,28 @@ angular.module('javascriptApp')
           $scope.atletas.cadastrados = [];
           $scope.tableParams.reload();
         });
+      };
+
+      /*
+      | Mostra uma mensagem de aviso
+      */
+      var showWarningMessage = function(message) {
+        $timeout(function(){
+          $scope.warningMessage = '';
+        }, 2500);
+
+        return $scope.warningMessage = message;
+      };
+
+      /*
+      | Validade do horario informado
+       */
+      var isInvalidTime = function(_date) {
+        return ! moment(_date, 'HH:mm').isValid();
+      };
+
+      var indexByNumber = function(_number) {
+        return _.findIndex($scope.atletas.cadastrados, { numero: _number });
       };
 
       TimesManager.all().then(function(_atletasCadastrados) {

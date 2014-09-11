@@ -33,14 +33,14 @@
       <div class="panel-body">
         <form ng-submit="addSaida()" class="form" role="form" name="atletaSaidaForm">
           <div class="form-group">
-            <label for="atletaSaida" class="sr-only">Atleta</label>
-            <input required type="text" class="form-control" id="atletaSaida"
-                   ng-model="data.atletaSaida" placeholder="Nº Atleta">
+            <label for="atletaSaida-numero" class="sr-only">Atleta</label>
+            <input required type="text" class="form-control" id="atletaSaida-numero"
+                   ng-model="atletaSaida.numero" placeholder="Nº Atleta">
           </div>
           <div class="form-group">
-            <label for="horarioSaida" class="sr-only">Horário</label>
-            <input required type="text" class="form-control" id="horarioSaida"
-                   ng-model="data.horarioSaida" placeholder="Horário de Saída">
+            <label for="atletaSaida-horario" class="sr-only">Horário</label>
+            <input required type="text" class="form-control" id="atletaSaida-horario"
+                   ng-model="atletaSaida.horario" ui-mask="99:99">
           </div>
           <button type="submit" class="btn btn-primary btn-block" ng-disabled="atletaSaidaForm.$invalid">
             <span class="glyphicon glyphicon-plus"></span> Registrar Saída
@@ -58,9 +58,9 @@
       <div class="panel-body">
         <form ng-submit="addChegada()" class="form" role="form" name="atletaChegadaForm">
           <div class="form-group">
-            <label for="atletaChegada" class="sr-only">Atleta</label>
-            <input required type="text" class="form-control" id="atletaChegada"
-                   ng-model="data.atletaChegada" placeholder="Nº Atleta">
+            <label for="atletaChegada-numero" class="sr-only">Atleta</label>
+            <input required type="text" class="form-control" id="atletaChegada-numero"
+                   ng-model="atletaChegada.numero" placeholder="Nº Atleta">
           </div>
           <button class="btn btn-primary btn-block" ng-disabled="atletaChegadaForm.$invalid">
             <span class="glyphicon glyphicon-plus"></span> Registrar Chegada
@@ -70,6 +70,10 @@
     </div>
   </div>
 </div>
+
+<!-- Warning Message -->
+<div class="alert alert-warning" role="alert" ng-show="warningMessage"><strong>{{ warningMessage }}</strong></div>
+<!-- endWarning Message -->
 
 <div class="row">
   <div ng-show="atletas.cadastrados.length > 0" class="atletas-table">
@@ -85,11 +89,11 @@
               </td>
           </tr>
           <tr ng-hide="categoria.$hideRows" ng-repeat="atleta in categoria.data">
-            <td data-title="'Atleta'">{{ atleta.numero }}</td>
-            <td data-title="'Categoria'">{{ atleta.categoria }}</td>
-            <td data-title="'Partida'">{{ atleta.saida }}</td>
-            <td data-title="'Chegada'">{{ atleta.chegada }}</td>
-            <td data-title="'Tempo'">{{ atleta.tempo }}</td>
+            <td class="text-center" data-title="'Atleta'">{{ atleta.numero }}</td>
+            <td class="text-center" data-title="'Categoria'">{{ atleta.categoria }}</td>
+            <td class="text-center" data-title="'Partida'">{{ atleta.saida }}</td>
+            <td class="text-center" data-title="'Chegada'">{{ atleta.chegada }}</td>
+            <td class="text-center" data-title="'Tempo'">{{ atleta.tempo }}</td>
             <td class="text-center">
               <button class="btn btn-default btn-danger btn-xs"
                       ng-click="removeRecord(atleta)">
