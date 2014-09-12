@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('natura.tempos')
-  .controller('MainCtrl', ['$scope', '$timeout', 'ngTableParams', 'TimesManager', 'CATEGORIAS',
-    function ($scope, $timeout, ngTableParams, TimesManager, CATEGORIAS) {
+  .controller('MainCtrl', ['$scope', '$timeout', '$filter', 'ngTableParams', 'TimesManager', 'CATEGORIAS',
+    function ($scope, $timeout, $filter, ngTableParams, TimesManager, CATEGORIAS) {
 
       $scope.atletaChegada = { numero: '' };
       $scope.atletaSaida   = { numero: '', horario: '' };
@@ -13,6 +13,11 @@ angular.module('natura.tempos')
       /* Adiciona um novo atleta */
       $scope.addAtleta = function() {
 
+        if (isInvalidTime($scope.novoAtleta.saida))
+        {
+          return showWarningMessage('A horário informado é inválido.');
+        }
+
         var existente = _.find($scope.atletas.cadastrados, {
           numero: $scope.novoAtleta.numero
         });
@@ -21,13 +26,14 @@ angular.module('natura.tempos')
         if (angular.isDefined(existente))
         {
           existente.categoria = $scope.novoAtleta.categoria;
+          existente.saida = moment($scope.novoAtleta.saida + '00', 'HHmmss').format('HH:mm:ss');
         }
         else
         {
           $scope.atletas.cadastrados.push({
             numero    : $scope.novoAtleta.numero,
             categoria : $scope.novoAtleta.categoria,
-            saida     : '',
+            saida     : moment($scope.novoAtleta.saida + '00', 'HHmmss').format('HH:mm:ss'),
             chegada   : '',
             tempo     : ''
           });
@@ -36,6 +42,7 @@ angular.module('natura.tempos')
         // Salva no localStorage
         TimesManager.sync($scope.atletas.cadastrados).then(function() {
           $scope.novoAtleta.numero    = '';
+          $scope.novoAtleta.saida     = '';
           $scope.novoAtleta.categoria = CATEGORIAS[0];
         });
 
@@ -101,6 +108,7 @@ angular.module('natura.tempos')
           $scope.atletaChegada.numero = '';
         });
 
+        $scope.tableParams.reload();
       };
 
       // Remove o atleta selecionado
@@ -144,6 +152,8 @@ angular.module('natura.tempos')
       TimesManager.all().then(function(_atletasCadastrados) {
         $scope.atletas.cadastrados = _atletasCadastrados ? _atletasCadastrados : [];
         $scope.tableParams.reload();
+
+        console.log($filter('orderBy')($scope.atletas.cadastrados, 'tempo'));
       });
 
       $scope.tableParams = new ngTableParams({
@@ -154,7 +164,7 @@ angular.module('natura.tempos')
         groupBy: 'categoria',
         getData: function($defer, params) {
           params.total($scope.atletas.cadastrados.length);
-          $defer.resolve($scope.atletas.cadastrados);
+          $defer.resolve(_.sortBy($scope.atletas.cadastrados, 'tempo'));
         }
       });
 

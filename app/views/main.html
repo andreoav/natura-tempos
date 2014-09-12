@@ -12,6 +12,11 @@
                    data-ng-model="novoAtleta.numero" placeholder="Nº Atleta">
           </div>
           <div class="form-group">
+            <label for="atleta-horario" class="sr-only">Horário</label>
+            <input required type="text" class="form-control" id="atleta-horario"
+                   ng-model="novoAtleta.saida" ui-mask="99:99">
+          </div>
+          <div class="form-group">
             <label for="atleta-categoria" class="sr-only">Categoria</label>
             <select required id="atleta-categoria" class="form-control"
               ng-model="novoAtleta.categoria"
