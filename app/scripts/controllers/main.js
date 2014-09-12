@@ -1,9 +1,12 @@
+/*global moment, _*/
+
 'use strict';
 
 angular.module('natura.tempos')
-  .controller('MainCtrl', ['$scope', '$timeout', '$filter', 'ngTableParams', 'TimesManager', 'CATEGORIAS',
-    function ($scope, $timeout, $filter, ngTableParams, TimesManager, CATEGORIAS) {
+  .controller('MainCtrl', ['$scope', '$timeout', 'ngTableParams', 'TimesManager', 'CATEGORIAS',
+    function ($scope, $timeout, TableParams, TimesManager, CATEGORIAS) {
 
+      $scope.selectOptions = { width: '100%' };
       $scope.atletaChegada = { numero: '' };
       $scope.atletaSaida   = { numero: '', horario: '' };
       $scope.novoAtleta    = { numero    : '', categoria : CATEGORIAS[0], saida: '', chegada: '', tempo: '' };
@@ -96,7 +99,7 @@ angular.module('natura.tempos')
           return showWarningMessage('O horário de chegada é anterior ao horário de saída.');
         }
 
-        if (_atleta.saida == '')
+        if (_atleta.saida === '')
         {
           return showWarningMessage('O atleta não possui um horário de saída cadastrado.');
         }
@@ -135,7 +138,8 @@ angular.module('natura.tempos')
           $scope.warningMessage = '';
         }, 2500);
 
-        return $scope.warningMessage = message;
+        $scope.warningMessage = message;
+        return message;
       };
 
       /*
@@ -156,7 +160,7 @@ angular.module('natura.tempos')
         console.log($filter('orderBy')($scope.atletas.cadastrados, 'tempo'));
       });
 
-      $scope.tableParams = new ngTableParams({
+      $scope.tableParams = new TableParams({
         page: 1,
         count: 10
       }, {

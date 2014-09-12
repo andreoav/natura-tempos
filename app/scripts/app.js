@@ -9,6 +9,7 @@ angular
     'ngRoute',
     'ngTable',
     'ui.utils',
+    'ui.select2',
     'ngTableExport',
     'ngNumeraljs',
     'angularMoment',
